@@ -1,4 +1,4 @@
-# GTNH Jenksins Downloader
+# GTNH Jenkins Downloader
  
  This application updates minecraft mods from Gregtech New Horizons jenkins page.
 
