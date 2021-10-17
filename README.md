@@ -4,7 +4,7 @@
 
  It was created for people who do not want to wait for a new development version and want the most unstable and up-to-date pack.
 
-## It is still recommend to manually update to new dev version when it is available, this application only updates mods, if theres a new one, it wont be downloaded. Also the confings are not updated
+## Players should download new Dev version whenever it is released, this program downloads only mod files and won't update files such as scripts etc.
 
 Images:
 ![image](https://user-images.githubusercontent.com/53441451/137636072-f1f5ee4c-12c4-4d90-a95f-5d64205eaa88.png)
@@ -15,6 +15,13 @@ Images:
  - Goto release page https://github.com/kuba6000/GTNH-Jenksins-Downloader/releases
  - Download the newest one
  - Open
+# How to use
+ - Set path/s in settings
+ - Use Update list
+ - Uncheck any mod you dont want to update
+ - Right click to see more options such as adding to black list
+ - Click Update mods
+ - Done
 # How to remove completely
  - Goto %appdata% folder
  - Remove GTNHJenksinsDownloader folder
