@@ -420,6 +420,8 @@ namespace GTNHJenksinsDownloader
             //GTNewHorizonsCoreMod-1.7.10-1.8.03.jar == GTNewHorizonsCoreMod-1.7.10-1.8.00.jar
             //MessageBox.Show(trimnumbers("GTNewHorizonsCoreMod-1.7.10-1.8.03.jar") + " == " + trimnumbers("GTNewHorizonsCoreMod-1.7.10-1.8.00.jar"));
 
+            versionlabel.Text = Settings.version;
+
             Settings.Load();
             UpdateSettings();
         }
@@ -827,7 +829,7 @@ namespace GTNHJenksinsDownloader
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Created by kuba6000#2271\nVersion 0.1 - Many bugs included", "GTNH Jenksins Downloader", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Created by kuba6000#2271\n" + Settings.version + " - Many bugs included", "GTNH Jenksins Downloader", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

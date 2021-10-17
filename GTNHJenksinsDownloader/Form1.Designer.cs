@@ -121,8 +121,8 @@ namespace GTNHJenksinsDownloader
             // versionlabel
             // 
             this.versionlabel.Name = "versionlabel";
-            this.versionlabel.Size = new System.Drawing.Size(22, 17);
-            this.versionlabel.Text = "0.1";
+            this.versionlabel.Size = new System.Drawing.Size(12, 17);
+            this.versionlabel.Text = "-";
             // 
             // menuStrip1
             // 
@@ -365,7 +365,7 @@ namespace GTNHJenksinsDownloader
             this.Name = "MainForm";
             this.Opacity = 0D;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "GTNH Jenksins Downloader";
+            this.Text = "GTNH Jenkins Downloader";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.statusStrip1.ResumeLayout(false);

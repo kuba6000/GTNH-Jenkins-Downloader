@@ -43,9 +43,9 @@ namespace GTNHJenksinsDownloader
             this.modpathbutton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.label4 = new System.Windows.Forms.Label();
             this.clientchk = new System.Windows.Forms.CheckBox();
             this.serverchk = new System.Windows.Forms.CheckBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.servermodpathbutton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.servermodpathtxt = new System.Windows.Forms.TextBox();
@@ -173,6 +173,18 @@ namespace GTNHJenksinsDownloader
             this.label3.Text = "!!!";
             this.toolTip1.SetToolTip(this.label3, "Wrong path");
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("OpenSymbol", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.ForeColor = System.Drawing.Color.Red;
+            this.label4.Location = new System.Drawing.Point(521, 195);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(37, 30);
+            this.label4.TabIndex = 16;
+            this.label4.Text = "!!!";
+            this.toolTip1.SetToolTip(this.label4, "Wrong path");
+            // 
             // clientchk
             // 
             this.clientchk.AutoSize = true;
@@ -194,18 +206,6 @@ namespace GTNHJenksinsDownloader
             this.serverchk.Text = "Server";
             this.serverchk.UseVisualStyleBackColor = true;
             this.serverchk.CheckedChanged += new System.EventHandler(this.serverchk_CheckedChanged);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("OpenSymbol", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.Color.Red;
-            this.label4.Location = new System.Drawing.Point(521, 195);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(37, 30);
-            this.label4.TabIndex = 16;
-            this.label4.Text = "!!!";
-            this.toolTip1.SetToolTip(this.label4, "Wrong path");
             // 
             // servermodpathbutton
             // 
@@ -269,7 +269,7 @@ namespace GTNHJenksinsDownloader
             this.Name = "SettingsForm";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "SettingsForm";
+            this.Text = "Settings";
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

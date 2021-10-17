@@ -12,6 +12,7 @@ namespace GTNHJenksinsDownloader
         static public readonly string settingspath = Path.Combine(appdirectory, "settings.conf");
         static public readonly string apppath = Path.Combine(appdirectory, "GTNHJenksinsDownloader.exe");
         static public readonly string appname = "GTNH Jenksins Downloader";
+        static public readonly string version = "v0.1";
         public class Options {
             public bool quitonclose = false;
             public bool autoupdates = false;
