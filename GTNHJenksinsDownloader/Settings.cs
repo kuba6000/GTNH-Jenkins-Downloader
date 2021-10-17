@@ -6,13 +6,19 @@ using System.Collections.Generic;
 
 namespace GTNHJenksinsDownloader
 {
+    public static class Resources
+    {
+        public const string version = "0.2";
+    }
+
     static class Settings
     {
         static public readonly string appdirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GTNHJenksinsDownloader\\");
         static public readonly string settingspath = Path.Combine(appdirectory, "settings.conf");
         static public readonly string apppath = Path.Combine(appdirectory, "GTNHJenksinsDownloader.exe");
-        static public readonly string appname = "GTNH Jenksins Downloader";
-        static public readonly string version = "v0.1";
+        static public readonly string appname = "GTNH Jenkins Downloader";
+        static public readonly string version = 'v' + Resources.version;
+        static public readonly int buildNumber = Utility.GetBuildNumberFromVersionString(Resources.version);
         public class Options {
             public bool quitonclose = false;
             public bool autoupdates = false;

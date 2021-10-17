@@ -60,19 +60,6 @@ namespace GTNHJenksinsDownloader
         }
 
 
-        private string calculateMD5(string filename)
-        {
-            using (var md5 = MD5.Create())
-            {
-                using (var stream = File.OpenRead(filename))
-                {
-                    var hash = md5.ComputeHash(stream);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-                }
-            }
-        }
-
-
         public void updateStatusLabel(bool invoke, string newstatus, Color color, int progress = -1)
         {
             Action act = () => {
@@ -161,7 +148,7 @@ namespace GTNHJenksinsDownloader
                 updateStatusLabel(true, "Building mods list: " + Path.GetFileName(pathtomod), Color.Black, (int)progress);
                 modfile modfile = new modfile();
                 modfile.path = pathtomod;
-                modfile.hash = calculateMD5(pathtomod);
+                modfile.hash = Utility.calculateMD5(pathtomod);
                 modfile.filename = Path.GetFileName(pathtomod);
                 modfiles[i++] = modfile;
                 progress += progressperoperation;
@@ -174,7 +161,7 @@ namespace GTNHJenksinsDownloader
             List<modsList_t> clientupdates = null;
             List<modsList_t> serverupdates = null;
             updateStatusLabel(true, "Downloading jenkins list", Color.Black);
-            string a = Get(Settings.options.jenkinspath + "api/json?tree=jobs[name,lastSuccessfulBuild[result,timestamp,artifacts[fileName,relativePath],url,fingerprint[hash]],url]");
+            string a = Utility.Get(Settings.options.jenkinspath + "api/json?tree=jobs[name,lastSuccessfulBuild[result,timestamp,artifacts[fileName,relativePath],url,fingerprint[hash]],url]");
             int maxprogress = 100;
             if (Settings.options.client && Settings.options.server)
                 maxprogress = 75;
@@ -262,7 +249,7 @@ namespace GTNHJenksinsDownloader
                             continue;
 
                         long lastbuildtime = (long)jobs[i]["lastSuccessfulBuild"]["timestamp"];
-                        DateTime time1 = UnixTimeStampToDateTime(lastbuildtime / 1000);
+                        DateTime time1 = Utility.UnixTimeStampToDateTime(lastbuildtime / 1000);
                         DateTime time2 = File.GetLastWriteTime(mymod.path);
                         double diff = (time1 - time2).TotalMinutes;
                         //if (Math.Abs(diff) < 1d)
@@ -289,7 +276,7 @@ namespace GTNHJenksinsDownloader
                             {
                                 //MessageBox.Show(mymod.filename);
                                 //search for file
-                                Newtonsoft.Json.Linq.JArray builds = ((dynamic)JsonConvert.DeserializeObject(Get((string)jobs[i]["url"] + "api/json?tree=builds[fingerprint[hash]]"))).builds;
+                                Newtonsoft.Json.Linq.JArray builds = ((dynamic)JsonConvert.DeserializeObject(Utility.Get((string)jobs[i]["url"] + "api/json?tree=builds[fingerprint[hash]]"))).builds;
                                 foreach (var build in builds)
                                 {
                                     Newtonsoft.Json.Linq.JArray fg = (Newtonsoft.Json.Linq.JArray)build["fingerprint"];
@@ -394,26 +381,7 @@ namespace GTNHJenksinsDownloader
             return ret;
         }
 
-        public static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
-        {
-            // Unix timestamp is seconds past epoch
-            DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
-            return dateTime;
-        }
-
-        public string Get(string uri) //https://stackoverflow.com/questions/27108264/how-to-properly-make-a-http-web-get-request
-        {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream stream = response.GetResponseStream())
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
-        }
+        
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -563,7 +531,7 @@ namespace GTNHJenksinsDownloader
                                     failed.Add(mod);
                                     break;
                                 }
-                                if (calculateMD5(modfile) == mod.hash)
+                                if (Utility.calculateMD5(modfile) == mod.hash)
                                     break;
                             }
                             if (faileddownloading)
@@ -571,7 +539,7 @@ namespace GTNHJenksinsDownloader
 
                             File.Delete(mod.localfilename);
                             File.Copy(modfile, mod.filename);
-                            DateTime time = UnixTimeStampToDateTime(mod.lastbuildtime / 1000);
+                            DateTime time = Utility.UnixTimeStampToDateTime(mod.lastbuildtime / 1000);
                             File.SetCreationTime(mod.filename, time);
                             File.SetLastWriteTime(mod.filename, time);
                             if(Settings.options.server && servermodlist.Count > 0)
@@ -625,7 +593,7 @@ namespace GTNHJenksinsDownloader
                             }
                             File.Delete(mod.localfilename);
                             File.Copy(modfile, mod.filename);
-                            DateTime time = UnixTimeStampToDateTime(mod.lastbuildtime / 1000);
+                            DateTime time = Utility.UnixTimeStampToDateTime(mod.lastbuildtime / 1000);
                             File.SetCreationTime(mod.filename, time);
                             File.SetLastWriteTime(mod.filename, time);
                             if (File.Exists(modfile)) File.Delete(modfile);
@@ -671,6 +639,9 @@ namespace GTNHJenksinsDownloader
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+#if DEBUG
+            return; // dont hide to tray when debugging
+#endif
             if (closing || Settings.options.quitonclose)
                 return;
             e.Cancel = true;

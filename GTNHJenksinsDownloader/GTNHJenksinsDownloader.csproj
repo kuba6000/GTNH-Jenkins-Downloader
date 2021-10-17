@@ -84,6 +84,7 @@
     <Compile Include="SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Utility.cs" />
     <EmbeddedResource Include="blacklistform.resx">
       <DependentUpon>blacklistform.cs</DependentUpon>
     </EmbeddedResource>
