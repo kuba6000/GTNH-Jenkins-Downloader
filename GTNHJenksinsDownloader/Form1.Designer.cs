@@ -42,12 +42,17 @@ namespace GTNHJenksinsDownloader
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hideToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blacklistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clientmodslistview = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.updatesstrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addToBlacklistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.Updatebutton = new System.Windows.Forms.Button();
             this.upgrademods = new System.Windows.Forms.Button();
@@ -59,11 +64,6 @@ namespace GTNHJenksinsDownloader
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label1 = new System.Windows.Forms.Label();
             this.afterload = new System.Windows.Forms.Timer(this.components);
-            this.toggleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toggleAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.blacklistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.updatesstrip.SuspendLayout();
@@ -115,7 +115,7 @@ namespace GTNHJenksinsDownloader
             // toolstripbreak
             // 
             this.toolstripbreak.Name = "toolstripbreak";
-            this.toolstripbreak.Size = new System.Drawing.Size(1133, 17);
+            this.toolstripbreak.Size = new System.Drawing.Size(1235, 17);
             this.toolstripbreak.Spring = true;
             // 
             // versionlabel
@@ -158,6 +158,20 @@ namespace GTNHJenksinsDownloader
             this.quitToolStripMenuItem.Size = new System.Drawing.Size(42, 20);
             this.quitToolStripMenuItem.Text = "Quit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
+            // 
+            // blacklistToolStripMenuItem
+            // 
+            this.blacklistToolStripMenuItem.Name = "blacklistToolStripMenuItem";
+            this.blacklistToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
+            this.blacklistToolStripMenuItem.Text = "Blacklist";
+            this.blacklistToolStripMenuItem.Click += new System.EventHandler(this.blacklistToolStripMenuItem_Click);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // clientmodslistview
             // 
@@ -209,6 +223,27 @@ namespace GTNHJenksinsDownloader
             this.addToBlacklistToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
             this.addToBlacklistToolStripMenuItem.Text = "Add to/remove from blacklist";
             this.addToBlacklistToolStripMenuItem.Click += new System.EventHandler(this.addToBlacklistToolStripMenuItem_Click);
+            // 
+            // toggleToolStripMenuItem
+            // 
+            this.toggleToolStripMenuItem.Name = "toggleToolStripMenuItem";
+            this.toggleToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.toggleToolStripMenuItem.Text = "Toggle";
+            this.toggleToolStripMenuItem.Click += new System.EventHandler(this.toggleToolStripMenuItem_Click);
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.selectAllToolStripMenuItem.Text = "Check all";
+            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
+            // 
+            // toggleAllToolStripMenuItem
+            // 
+            this.toggleAllToolStripMenuItem.Name = "toggleAllToolStripMenuItem";
+            this.toggleAllToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.toggleAllToolStripMenuItem.Text = "Toggle all";
+            this.toggleAllToolStripMenuItem.Click += new System.EventHandler(this.toggleAllToolStripMenuItem_Click);
             // 
             // notifyIcon1
             // 
@@ -308,41 +343,6 @@ namespace GTNHJenksinsDownloader
             this.afterload.Enabled = true;
             this.afterload.Interval = 1;
             this.afterload.Tick += new System.EventHandler(this.afterload_Tick);
-            // 
-            // toggleToolStripMenuItem
-            // 
-            this.toggleToolStripMenuItem.Name = "toggleToolStripMenuItem";
-            this.toggleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.toggleToolStripMenuItem.Text = "Toggle";
-            this.toggleToolStripMenuItem.Click += new System.EventHandler(this.toggleToolStripMenuItem_Click);
-            // 
-            // selectAllToolStripMenuItem
-            // 
-            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.selectAllToolStripMenuItem.Text = "Check all";
-            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
-            // 
-            // toggleAllToolStripMenuItem
-            // 
-            this.toggleAllToolStripMenuItem.Name = "toggleAllToolStripMenuItem";
-            this.toggleAllToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.toggleAllToolStripMenuItem.Text = "Toggle all";
-            this.toggleAllToolStripMenuItem.Click += new System.EventHandler(this.toggleAllToolStripMenuItem_Click);
-            // 
-            // blacklistToolStripMenuItem
-            // 
-            this.blacklistToolStripMenuItem.Name = "blacklistToolStripMenuItem";
-            this.blacklistToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
-            this.blacklistToolStripMenuItem.Text = "Blacklist";
-            this.blacklistToolStripMenuItem.Click += new System.EventHandler(this.blacklistToolStripMenuItem_Click);
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.aboutToolStripMenuItem.Text = "About";
-            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // MainForm
             // 

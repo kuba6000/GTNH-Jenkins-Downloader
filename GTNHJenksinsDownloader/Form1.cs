@@ -579,6 +579,8 @@ namespace GTNHJenksinsDownloader
                                 {
                                     File.Delete(servermodlist[index].localfilename);
                                     File.Copy(modfile, servermodlist[index].filename);
+                                    File.SetCreationTime(mod.filename, time);
+                                    File.SetLastWriteTime(mod.filename, time);
                                     servermodlist.RemoveAt(index);
                                 }
                             }
@@ -621,6 +623,9 @@ namespace GTNHJenksinsDownloader
                             }
                             File.Delete(mod.localfilename);
                             File.Copy(modfile, mod.filename);
+                            DateTime time = UnixTimeStampToDateTime(mod.lastbuildtime / 1000);
+                            File.SetCreationTime(mod.filename, time);
+                            File.SetLastWriteTime(mod.filename, time);
                             if (File.Exists(modfile)) File.Delete(modfile);
                         }
                         if (failed.Count > 0)

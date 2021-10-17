@@ -32,7 +32,11 @@ namespace GTNHJenksinsDownloader
 
             // Hide
             ShowWindow(handle, SW_HIDE);
-            if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Settings.apppath)).Length > 1) return;
+            if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Settings.apppath)).Length > 1)
+            {
+                MessageBox.Show("App arledy running !", "GTNH Jenkins Downloader", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             string exepath = System.Reflection.Assembly.GetExecutingAssembly().Location;
             string dirname = Path.GetDirectoryName(exepath);
             if (!dirname.EndsWith("\\")) dirname += "\\";
