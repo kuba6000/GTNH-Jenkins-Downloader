@@ -35,29 +35,6 @@ namespace GTNHJenksinsDownloader
             blacklistlist.Items.Clear();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            string[] recommended = { 
-                "BuildCraft",
-                "BuildCraftCompat",
-                "Ender-IO",
-                "Ender-Storage",
-                "Tainted-Magic",
-                "ThaumcraftMobAspects"
-            };
-
-            foreach (string recom in recommended)
-            {
-                if(!Settings.options.blacklist.Contains(recom))
-                {
-                    Settings.options.blacklist.Add(recom);
-                    blacklistlist.Items.Add(recom);
-                }
-            }
-
-            Settings.Save();
-        }
-
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if(blacklistlist.SelectedIndices.Count > 0)
