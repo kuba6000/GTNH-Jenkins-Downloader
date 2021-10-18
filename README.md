@@ -23,6 +23,7 @@ Images:
  - Click Update mods
  - Done
 # How to remove completely
+ - Make sure that autostart is unchecked in settings
  - Goto %appdata% folder
  - Remove GTNHJenksinsDownloader folder
 # How to build
