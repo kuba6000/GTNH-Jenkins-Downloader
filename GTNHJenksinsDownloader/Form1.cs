@@ -159,12 +159,47 @@ namespace GTNHJenksinsDownloader
             return modfiles;
         }
 
+        List<string> git = new List<string>();
+
         private void updateModsList()
         {
             List<modsList_t> clientupdates = null;
             List<modsList_t> serverupdates = null;
             updateStatusLabel(true, "Downloading jenkins list", Color.Black);
-            string a = Utility.Get(Settings.options.jenkinspath + "api/json?tree=jobs[name,lastSuccessfulBuild[result,timestamp,artifacts[fileName,relativePath],url,fingerprint[hash]],url]");
+            //string a = Utility.Get(Settings.options.jenkinspath + "api/json?tree=jobs[name,lastSuccessfulBuild[result,timestamp,artifacts[fileName,relativePath],url,fingerprint[hash]],url]");
+            string a = Utility.Get(Settings.options.jenkinspath + "api/json?tree=jobs[name,lastSuccessfulBuild[actions[buildsByBranchName[*],remoteUrls[*]],result,artifacts[fileName,relativePath],url],url]");
+            int p = 1;
+
+            if(git.Count == 0)
+                while(true)
+                {
+                    string gitresponse;
+                    try
+                    {
+                        gitresponse = Utility.Get("https://api.github.com/orgs/GTNewHorizons/repos?page=" + p.ToString() + "&per_page=100");
+                    }
+                    catch(WebException ex)
+                    {
+                        if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Forbidden)
+                            MessageBox.Show("Exceeded limit on github api requests ! Please try again in 1 hour", Settings.appname, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        else
+                            MessageBox.Show("Error", Settings.appname, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        git.Clear();
+                        return;
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Error", Settings.appname, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        git.Clear();
+                        return;
+                    }
+                    
+                    if (((Newtonsoft.Json.Linq.JArray)JsonConvert.DeserializeObject(gitresponse)).Count == 0)
+                        break;
+                    git.Add(gitresponse);
+                    p++;
+                }
+            
             int maxprogress = 100;
             if (Settings.options.client && Settings.options.server)
                 maxprogress = 75;
@@ -172,13 +207,13 @@ namespace GTNHJenksinsDownloader
             {
                 Console.WriteLine("Updating client mod list");
                 string[] clientmods = Directory.GetFiles(Settings.options.modpath);
-                clientupdates = UpdateModsList(clientmodslistview, getModList(clientmods), a, ref clientmodlist, 50, maxprogress);
+                clientupdates = UpdateModsList(clientmodslistview, getModList(clientmods), a, git, ref clientmodlist, 50, maxprogress);
             }
             if (Settings.options.server)
             {
                 Console.WriteLine("Updating server mod list");
                 string[] servermods = Directory.GetFiles(Settings.options.servermodpath);
-                serverupdates = UpdateModsList(servermodslistview, getModList(servermods), a, ref servermodlist, (maxprogress == 75 ? 75 : 50), 100);
+                serverupdates = UpdateModsList(servermodslistview, getModList(servermods), a, git, ref servermodlist, (maxprogress == 75 ? 75 : 50), 100);
             }
             
             List<modsList_t> updates = new List<modsList_t>();
@@ -211,7 +246,7 @@ namespace GTNHJenksinsDownloader
 
         }
 
-        private List<modsList_t> UpdateModsList(ListView LW, modfile[] mymods, string a, ref List<modsList_t> list, int actualprogress, int maxprogress)
+        private List<modsList_t> UpdateModsList(ListView LW, modfile[] mymods, string a, List<string> git, ref List<modsList_t> list, int actualprogress, int maxprogress)
         {
 
             List<modsList_t> updates = new List<modsList_t>();
@@ -219,8 +254,12 @@ namespace GTNHJenksinsDownloader
 
             Invoke((Action)(() => LW.Items.Clear()));
             dynamic parsed = JsonConvert.DeserializeObject(a);
+            List<Newtonsoft.Json.Linq.JArray> gits = new List<Newtonsoft.Json.Linq.JArray>();
+            foreach (string item in git)
+                gits.Add((Newtonsoft.Json.Linq.JArray)JsonConvert.DeserializeObject(item));
 
             Newtonsoft.Json.Linq.JArray jobs = parsed.jobs;
+
             double progress = (double)actualprogress;
             double progressperoperation = ((double)maxprogress - progress) / jobs.Count;
             Console.WriteLine("Searching mods in jenkins list");
@@ -243,8 +282,76 @@ namespace GTNHJenksinsDownloader
                     if (found)
                     {
                         //check for hash instead of time
+
+                        //determine latest default build
+
+                        string defaultbranch = "";
+
+                        Console.WriteLine("Searching for default branch");
+
+                        int builddatai = 0;
+
+                        for (int j = 0; j < 4; j++)
+                            if ((string)jobs[i]["lastSuccessfulBuild"]["actions"][j]["_class"] == "hudson.plugins.git.util.BuildData")
+                            {
+                                builddatai = j;
+                                break;
+                            }
+
+                        for (int x = 0; x < gits.Count; x++)
+                            for(int y = 0; y < gits[x].Count; y++)
+                            {
+                                //Console.WriteLine((string)gits[j]["clone_url"]);
+                                //Console.WriteLine((string)jobs[i]["lastSuccessfulBuild"]["actions"][2]["remoteUrls"][0]);
+                                
+                                if((string)gits[x][y]["clone_url"] == (string)jobs[i]["lastSuccessfulBuild"]["actions"][builddatai]["remoteUrls"][0])
+                                {
+                                    defaultbranch = (string)gits[x][y]["default_branch"];
+                                    Console.WriteLine("Default branch in git found: " + defaultbranch);
+                                    break;
+                                }
+                            }
+                        if(defaultbranch == "")
+                        {
+                            Console.WriteLine("Cannot find default branch in git, skipping");
+                            continue;
+                        }
+
+                        //Newtonsoft.Json.Linq.JArray builds = ((dynamic)JsonConvert.DeserializeObject(Utility.Get((string)jobs[i]["url"] + "api/json?tree=builds[fingerprint[hash]]"))).builds;
+                        int latestbuildnumber = -1;
+                        var o = jobs[i]["lastSuccessfulBuild"]["actions"][builddatai]["buildsByBranchName"]["origin/" + defaultbranch];
+                        var o2 = jobs[i]["lastSuccessfulBuild"]["actions"][builddatai]["buildsByBranchName"]["refs/remotes/origin/" + defaultbranch];
+                        if (o == null && o2 == null)
+                        {
+                            Console.WriteLine("Cannot find default branch in jenkins, skipping");
+                            continue;
+                        }
+                        if (o != null)
+                            latestbuildnumber = (int)o["buildNumber"];
+                        if (o2 != null)
+                        {
+                            int ln = (int)o2["buildNumber"];
+                            if (ln > latestbuildnumber)
+                                latestbuildnumber = ln;
+                        }
+                        Console.WriteLine("Found latest build number: " + latestbuildnumber);
+                        dynamic lastbuild;
+
+                        try
+                        {
+                            lastbuild = JsonConvert.DeserializeObject(Utility.Get((string)jobs[i]["url"] + latestbuildnumber.ToString() + "/api/json?tree=fingerprint[hash],timestamp,artifacts[fileName,relativePath],url"));
+                        }
+                        catch(WebException ex)
+                        {
+                            if(((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.NotFound)
+                            {
+                                Console.WriteLine("Latest build on default branch responded 404 on jenkins, skipping");
+                                continue;
+                            }
+                            throw;
+                        }
                         bool newversion = true;
-                        foreach (var fg in (Newtonsoft.Json.Linq.JArray)jobs[i]["lastSuccessfulBuild"]["fingerprint"])
+                        foreach (var fg in (Newtonsoft.Json.Linq.JArray)lastbuild["fingerprint"])
                         {
                             if ((string)fg["hash"] == mymod.hash)
                             {
@@ -260,7 +367,7 @@ namespace GTNHJenksinsDownloader
 
                         Console.WriteLine("Newer version found");
 
-                        long lastbuildtime = (long)jobs[i]["lastSuccessfulBuild"]["timestamp"];
+                        long lastbuildtime = (long)lastbuild["timestamp"];
                         DateTime time1 = Utility.UnixTimeStampToDateTime(lastbuildtime / 1000);
                         DateTime time2 = File.GetLastWriteTime(mymod.path);
                         double diff = (time1 - time2).TotalMinutes;
@@ -273,8 +380,8 @@ namespace GTNHJenksinsDownloader
                         item.SubItems.Add(time1.ToString());
                         item.SubItems.Add(time2.ToString());
                         int artifact = 0;
-                        Newtonsoft.Json.Linq.JArray artifacts = (Newtonsoft.Json.Linq.JArray)jobs[i]["lastSuccessfulBuild"]["artifacts"];
-                        Newtonsoft.Json.Linq.JArray fingerprint = (Newtonsoft.Json.Linq.JArray)jobs[i]["lastSuccessfulBuild"]["fingerprint"];
+                        Newtonsoft.Json.Linq.JArray artifacts = (Newtonsoft.Json.Linq.JArray)lastbuild["artifacts"];
+                        Newtonsoft.Json.Linq.JArray fingerprint = (Newtonsoft.Json.Linq.JArray)lastbuild["fingerprint"];
                         if (artifacts.Count > 1)
                         {
                             Console.WriteLine("Detected more than one artifact. Searching for the right one");
@@ -318,7 +425,7 @@ namespace GTNHJenksinsDownloader
                             if (index != -1)
                             {// update
                                 list[index].filename = Path.Combine(Path.GetDirectoryName(mymod.path), (string)artifacts[artifact]["fileName"]);
-                                list[index].downloadurl = (string)jobs[i]["lastSuccessfulBuild"]["url"] + "artifact/" + (string)artifacts[artifact]["relativePath"];
+                                list[index].downloadurl = (string)lastbuild["url"] + "artifact/" + (string)artifacts[artifact]["relativePath"];
                                 list[index].hash = (string)fingerprint[artifact]["hash"];
                                 if (list[index].lastbuildtime != lastbuildtime)
                                     updates.Add(list[index]);
@@ -331,7 +438,7 @@ namespace GTNHJenksinsDownloader
                                 mod.localfilename = mymod.path;
                                 mod.lastbuildtime = lastbuildtime;
                                 mod.filename = Path.Combine(Path.GetDirectoryName(mymod.path), (string)artifacts[artifact]["fileName"]);
-                                mod.downloadurl = (string)jobs[i]["lastSuccessfulBuild"]["url"] + "artifact/" + (string)artifacts[artifact]["relativePath"];
+                                mod.downloadurl = (string)lastbuild["url"] + "artifact/" + (string)artifacts[artifact]["relativePath"];
                                 mod.hash = (string)fingerprint[artifact]["hash"];
                                 list.Add(mod);
                                 updates.Add(mod);

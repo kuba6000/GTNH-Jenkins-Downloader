@@ -103,7 +103,15 @@ namespace GTNHJenksinsDownloader
 
         static bool update()
         {
-            string res = Utility.Get("https://api.github.com/repos/kuba6000/GTNH-Jenkins-Downloader/releases");
+            string res;
+            try
+            {
+                res = Utility.Get("https://api.github.com/repos/kuba6000/GTNH-Jenkins-Downloader/releases");
+            }
+            catch
+            {
+                return false;
+            }
             Newtonsoft.Json.Linq.JArray arr = (Newtonsoft.Json.Linq.JArray)JsonConvert.DeserializeObject(res);
             if (arr.Count > 0)
             {
