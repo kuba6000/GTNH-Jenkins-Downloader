@@ -8,7 +8,7 @@ namespace GTNHJenksinsDownloader
 {
     public static class Resources
     {
-        public const string version = "0.3";
+        public const string version = "0.4";
     }
 
     static class Settings
