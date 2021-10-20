@@ -54,7 +54,8 @@ namespace GTNHJenksinsDownloader
             // 
             // savebutton
             // 
-            this.savebutton.Location = new System.Drawing.Point(468, 243);
+            this.savebutton.Font = new System.Drawing.Font("OpenSymbol", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.savebutton.Location = new System.Drawing.Point(468, 272);
             this.savebutton.Name = "savebutton";
             this.savebutton.Size = new System.Drawing.Size(79, 27);
             this.savebutton.TabIndex = 0;
