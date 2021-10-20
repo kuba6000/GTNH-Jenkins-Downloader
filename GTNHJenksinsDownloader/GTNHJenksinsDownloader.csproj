@@ -57,6 +57,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="backupform.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="backupform.Designer.cs">
+      <DependentUpon>backupform.cs</DependentUpon>
+    </Compile>
     <Compile Include="blacklistform.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,6 +91,9 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Utility.cs" />
+    <EmbeddedResource Include="backupform.resx">
+      <DependentUpon>backupform.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="blacklistform.resx">
       <DependentUpon>blacklistform.cs</DependentUpon>
     </EmbeddedResource>

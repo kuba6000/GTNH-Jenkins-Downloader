@@ -86,7 +86,7 @@ namespace GTNHJenksinsDownloader
             this.autoupdateinterval.FormattingEnabled = true;
             this.autoupdateinterval.Items.AddRange(new object[] {
             "Only on startup",
-            "Every 10 minutes"});
+            "Every hour"});
             this.autoupdateinterval.Location = new System.Drawing.Point(267, 39);
             this.autoupdateinterval.Name = "autoupdateinterval";
             this.autoupdateinterval.Size = new System.Drawing.Size(165, 27);

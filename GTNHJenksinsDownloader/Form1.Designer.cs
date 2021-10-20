@@ -41,9 +41,10 @@ namespace GTNHJenksinsDownloader
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hideToTrayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.blacklistToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backupsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clientmodslistview = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -64,6 +65,8 @@ namespace GTNHJenksinsDownloader
             this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label1 = new System.Windows.Forms.Label();
             this.afterload = new System.Windows.Forms.Timer(this.components);
+            this.label2 = new System.Windows.Forms.Label();
+            this.backup = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.updatesstrip.SuspendLayout();
@@ -80,7 +83,7 @@ namespace GTNHJenksinsDownloader
             this.statuslabel,
             this.toolstripbreak,
             this.versionlabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 594);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 620);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1323, 22);
             this.statusStrip1.SizingGrip = false;
@@ -115,7 +118,7 @@ namespace GTNHJenksinsDownloader
             // toolstripbreak
             // 
             this.toolstripbreak.Name = "toolstripbreak";
-            this.toolstripbreak.Size = new System.Drawing.Size(1235, 17);
+            this.toolstripbreak.Size = new System.Drawing.Size(1245, 17);
             this.toolstripbreak.Spring = true;
             // 
             // versionlabel
@@ -129,9 +132,10 @@ namespace GTNHJenksinsDownloader
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.hideToTrayToolStripMenuItem,
-            this.quitToolStripMenuItem,
             this.blacklistToolStripMenuItem,
-            this.aboutToolStripMenuItem});
+            this.aboutToolStripMenuItem,
+            this.backupsToolStripMenuItem,
+            this.quitToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1323, 24);
@@ -152,13 +156,6 @@ namespace GTNHJenksinsDownloader
             this.hideToTrayToolStripMenuItem.Text = "Hide to tray";
             this.hideToTrayToolStripMenuItem.Click += new System.EventHandler(this.hideToTrayToolStripMenuItem_Click);
             // 
-            // quitToolStripMenuItem
-            // 
-            this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(42, 20);
-            this.quitToolStripMenuItem.Text = "Quit";
-            this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
-            // 
             // blacklistToolStripMenuItem
             // 
             this.blacklistToolStripMenuItem.Name = "blacklistToolStripMenuItem";
@@ -172,6 +169,20 @@ namespace GTNHJenksinsDownloader
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
+            // backupsToolStripMenuItem
+            // 
+            this.backupsToolStripMenuItem.Name = "backupsToolStripMenuItem";
+            this.backupsToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.backupsToolStripMenuItem.Text = "Backups";
+            this.backupsToolStripMenuItem.Click += new System.EventHandler(this.backupsToolStripMenuItem_Click);
+            // 
+            // quitToolStripMenuItem
+            // 
+            this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(42, 20);
+            this.quitToolStripMenuItem.Text = "Quit";
+            this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
             // clientmodslistview
             // 
@@ -344,11 +355,36 @@ namespace GTNHJenksinsDownloader
             this.afterload.Interval = 1;
             this.afterload.Tick += new System.EventHandler(this.afterload_Tick);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("OpenSymbol", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(8, 586);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(442, 24);
+            this.label2.TabIndex = 12;
+            this.label2.Text = "Game crash? Your factory stopped working?";
+            this.label2.Visible = false;
+            // 
+            // backup
+            // 
+            this.backup.Font = new System.Drawing.Font("OpenSymbol", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.backup.Location = new System.Drawing.Point(469, 582);
+            this.backup.Name = "backup";
+            this.backup.Size = new System.Drawing.Size(181, 32);
+            this.backup.TabIndex = 13;
+            this.backup.Text = "Restore backup!";
+            this.backup.UseVisualStyleBackColor = true;
+            this.backup.Visible = false;
+            this.backup.Click += new System.EventHandler(this.backup_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1323, 616);
+            this.ClientSize = new System.Drawing.Size(1323, 642);
+            this.Controls.Add(this.backup);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.serverupdates);
             this.Controls.Add(this.clientupdates);
@@ -415,6 +451,9 @@ namespace GTNHJenksinsDownloader
         private System.Windows.Forms.ToolStripMenuItem toggleAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem blacklistToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button backup;
+        private System.Windows.Forms.ToolStripMenuItem backupsToolStripMenuItem;
     }
 }
 

@@ -83,8 +83,7 @@ namespace GTNHJenksinsDownloader
                 {
                     if (Utility.GetBuildNumberFromVersionString(((string)arr[0]["name"]).Substring(1)) > Settings.buildNumber)
                     {
-                        DialogResult result = MessageBox.Show("Do you want to update ?\n" + Settings.version + " -> " + (string)arr[0]["name"], "New update found !", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                        if (result == DialogResult.Yes)
+                        if (Utility.messageBoxYesNo("Do you want to update ?\n" + Settings.version + " -> " + (string)arr[0]["name"], "New update found !", MessageBoxIcon.Information))
                         {
                             string temppath = Path.Combine(Path.GetTempPath(), "GTNHJenkinsDownloader\\");
                             if (!Directory.Exists(temppath)) Directory.CreateDirectory(temppath);

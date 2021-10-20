@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace GTNHJenksinsDownloader
 {
@@ -43,6 +44,8 @@ namespace GTNHJenksinsDownloader
         private const UInt32 FILE_ATTRIBUTE_NORMAL = 0x80;
         private const UInt32 ERROR_ACCESS_DENIED = 5;
 
+        private static Random random = new Random();
+
         public static DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
@@ -65,6 +68,33 @@ namespace GTNHJenksinsDownloader
             }
         }
 
+        public static bool messageBoxYesNo(string text, string title = "", MessageBoxIcon icon = MessageBoxIcon.Question)
+        {
+            if (title == "")
+                title = Settings.appname;
+            DialogResult res = MessageBox.Show(text, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            return res == DialogResult.Yes;
+        }
+
+        public static string randomString(int length)
+        {
+            string s = "";
+            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            while(--length > 0)
+                s += chars[random.Next(chars.Length)];
+            return s;
+        }
+
+        public static int randomInt(int min, int max)
+        {
+            return random.Next(min, max);
+        }
+
+        public static int randomInt(int max)
+        {
+            return random.Next(max);
+        }
+
         public static string calculateMD5(string filename)
         {
             using (var md5 = MD5.Create())
@@ -75,6 +105,31 @@ namespace GTNHJenksinsDownloader
                     return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
                 }
             }
+        }
+
+        public static bool checkifsamemod(string a, string b)
+        {
+            return cropmodname(a) == cropmodname(b);
+        }
+        public static string cropmodname(string modname)
+        {
+            int _;
+            if (modname.Contains("/"))
+                modname = modname.Substring(modname.LastIndexOf('/') + 1);
+            if (modname.Contains("\\"))
+                modname = modname.Substring(modname.LastIndexOf('\\') + 1);
+            for (int i = 0; i < modname.Length; i++)
+                if (int.TryParse(modname[i].ToString(), out _))
+                    return modname.Substring(0, i + 1);
+            return modname.ToLower();
+        }
+        public static string trimnumbers(string modname)
+        {
+            string ret = "";
+            for (int i = 0; i < modname.Length; i++)
+                if (!int.TryParse(modname[i].ToString(), out _))
+                    ret += modname[i];
+            return ret;
         }
 
         public static int GetBuildNumberFromVersionString(string version)

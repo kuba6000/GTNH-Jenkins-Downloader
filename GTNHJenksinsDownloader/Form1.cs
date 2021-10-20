@@ -18,7 +18,6 @@ namespace GTNHJenksinsDownloader
         SettingsForm settingsform = new SettingsForm();
         private System.Threading.Timer timer;
 
-        bool firstlaunch = false; // lets check every update
         bool closing = false;
 
         class downloadstatus_t
@@ -227,7 +226,7 @@ namespace GTNHJenksinsDownloader
                     bool found = false;
                     modfile mymod = null;
                     foreach (modfile l in mymods)
-                        if (Path.GetExtension(l.path).ToLower() == ".jar" && checkifsamemod((string)jobs[i]["lastSuccessfulBuild"]["artifacts"][0]["fileName"], l.filename))
+                        if (Path.GetExtension(l.path).ToLower() == ".jar" && Utility.checkifsamemod((string)jobs[i]["lastSuccessfulBuild"]["artifacts"][0]["fileName"], l.filename))
                         {
                             mymod = l;
                             found = true;
@@ -267,7 +266,7 @@ namespace GTNHJenksinsDownloader
                         {
                             artifact = -1;
                             for (int j = 0; j < artifacts.Count; j++)
-                                if (trimnumbers((string)artifacts[j]["fileName"]).ToLower().Length == trimnumbers(mymod.filename).ToLower().Length)
+                                if (Utility.trimnumbers((string)artifacts[j]["fileName"]).ToLower().Length == Utility.trimnumbers(mymod.filename).ToLower().Length)
                                 {
                                     artifact = j;
                                     break;
@@ -356,30 +355,7 @@ namespace GTNHJenksinsDownloader
             Invoke((Action)(() => { LastUpdate = DateTime.Now; Updatebutton_Click(null, null); }));
         }
 
-        private bool checkifsamemod(string a, string b)
-        {
-            return cropmodname(a) == cropmodname(b);
-        }
-        private string cropmodname(string modname)
-        {
-            int _;
-            if(modname.Contains("/"))
-                modname = modname.Substring(modname.LastIndexOf('/')+1);
-            if (modname.Contains("\\"))
-                modname = modname.Substring(modname.LastIndexOf('\\') + 1);
-            for (int i = 0; i < modname.Length; i++)
-                if (int.TryParse(modname[i].ToString(), out _))
-                    return modname.Substring(0, i + 1);
-            return modname.ToLower();
-        }
-        private string trimnumbers(string modname)
-        {
-            string ret = "";
-            for (int i = 0; i < modname.Length; i++)
-                if (!int.TryParse(modname[i].ToString(), out _))
-                    ret += modname[i];
-            return ret;
-        }
+        
 
         
 
@@ -389,6 +365,9 @@ namespace GTNHJenksinsDownloader
             //MessageBox.Show(trimnumbers("GTNewHorizonsCoreMod-1.7.10-1.8.03.jar") + " == " + trimnumbers("GTNewHorizonsCoreMod-1.7.10-1.8.00.jar"));
 
             versionlabel.Text = Settings.version;
+
+            if (!Directory.Exists(Settings.backupdirectory))
+                Directory.CreateDirectory(Settings.backupdirectory);
 
             Settings.Load();
             UpdateSettings();
@@ -463,8 +442,8 @@ namespace GTNHJenksinsDownloader
             }
             else if (Settings.options.autoupdateinterval == AutoUpdateSelector.everyhour)
             {
-                SetUpTimer(LastUpdate.AddMinutes(10).TimeOfDay);
-                updateStatusLabel(false, "Next auto list checking " + LastUpdate.AddMinutes(10).ToString(), Color.Black);
+                SetUpTimer(LastUpdate.AddHours(1).TimeOfDay);
+                updateStatusLabel(false, "Next auto list checking " + LastUpdate.AddHours(10).ToString(), Color.Black);
             }
         }
 
@@ -502,6 +481,10 @@ namespace GTNHJenksinsDownloader
                 }
 
                 new Thread(()=> {
+                    backupcreator clientcreator = new backupcreator();
+                    backupcreator servercreator = new backupcreator();
+
+
                     string temppath = Path.Combine(Path.GetTempPath(), "GTNHJenkinsDownloader\\");
                     if (!Directory.Exists(temppath)) Directory.CreateDirectory(temppath);
                     string modfile = Path.Combine(temppath, "mod.jar");
@@ -509,8 +492,12 @@ namespace GTNHJenksinsDownloader
 
                     List<modsList_t> failed = new List<modsList_t>();
 
-                    if(Settings.options.client && clientmodlist.Count > 0)
+                    if (Settings.options.server && servermodlist.Count > 0)
+                        servercreator.Begin();
+
+                    if (Settings.options.client && clientmodlist.Count > 0)
                     {
+                        clientcreator.Begin();
                         int counter = 0;
                         foreach (modsList_t mod in clientmodlist)
                         {
@@ -537,6 +524,8 @@ namespace GTNHJenksinsDownloader
                             if (faileddownloading)
                                 continue;
 
+                            clientcreator.Add(mod.localfilename);
+
                             File.Delete(mod.localfilename);
                             File.Copy(modfile, mod.filename);
                             DateTime time = Utility.UnixTimeStampToDateTime(mod.lastbuildtime / 1000);
@@ -547,6 +536,8 @@ namespace GTNHJenksinsDownloader
                                 int index = servermodlist.FindIndex((modsList_t arg) => { return arg.name == mod.name; });
                                 if (index != -1)
                                 {
+                                    servercreator.Add(servermodlist[index].localfilename);
+
                                     File.Delete(servermodlist[index].localfilename);
                                     File.Copy(modfile, servermodlist[index].filename);
                                     File.SetCreationTime(mod.filename, time);
@@ -572,7 +563,8 @@ namespace GTNHJenksinsDownloader
                         else
                             clientmodlist.Clear();
                     }
-                    
+                    clientcreator.End(backupcreator.backuptype.TYPE_CLIENT);
+
                     if (Settings.options.server && servermodlist.Count > 0)
                     {
                         int counter = 0;
@@ -580,17 +572,28 @@ namespace GTNHJenksinsDownloader
                         {
                             int percent = (int)(((double)counter / (double)servermodlist.Count) * 100d);
                             updateTotalStatusLabel(true, percent.ToString() + "%", Color.Black, percent);
-                            counter++;
-                            downloadstatus.filename = mod.name;
-                            downloadstatus.status = 0;
-                            DownloadMOD(mod.downloadurl, modfile);
-                            while (downloadstatus.status == 0)
-                                Thread.Sleep(200);
-                            if (downloadstatus.status == -1)
+                            bool faileddownloading = false;
+                            while (true)
                             {
-                                failed.Add(mod);
-                                continue;
+                                downloadstatus.filename = mod.name;
+                                downloadstatus.status = 0;
+                                DownloadMOD(mod.downloadurl, modfile);
+                                while (downloadstatus.status == 0)
+                                    Thread.Sleep(200);
+                                if (downloadstatus.status == -1)
+                                {
+                                    faileddownloading = true;
+                                    failed.Add(mod);
+                                    break;
+                                }
+                                if (Utility.calculateMD5(modfile) == mod.hash)
+                                    break;
                             }
+                            if (faileddownloading)
+                                continue;
+
+                            servercreator.Add(mod.localfilename);
+
                             File.Delete(mod.localfilename);
                             File.Copy(modfile, mod.filename);
                             DateTime time = Utility.UnixTimeStampToDateTime(mod.lastbuildtime / 1000);
@@ -598,6 +601,7 @@ namespace GTNHJenksinsDownloader
                             File.SetLastWriteTime(mod.filename, time);
                             if (File.Exists(modfile)) File.Delete(modfile);
                         }
+                        
                         if (failed.Count > 0)
                         {
                             for (int i = 0; i < servermodlist.Count; i++)
@@ -614,6 +618,7 @@ namespace GTNHJenksinsDownloader
                         else
                             servermodlist.Clear();
                     }
+                    servercreator.End(backupcreator.backuptype.TYPE_SERVER);
 
                     Invoke((Action)(()=> {
                         Updatebutton.Enabled = true;
@@ -629,7 +634,7 @@ namespace GTNHJenksinsDownloader
 
                         UpdateSettings();
 
-                        MessageBox.Show("Updating done\nList has been refreshed\nIf there is any mod appeard again then it has failed", "GTNH Jenkins Downloader", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Update has been done\nList has been refreshed\nIf there is any mod appeard again then it has failed", "GTNH Jenkins Downloader", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }));
 
 
@@ -801,6 +806,19 @@ namespace GTNHJenksinsDownloader
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Created by kuba6000#2271\n" + Settings.version + " - Many bugs included", "GTNH Jenksins Downloader", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void backup_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Restoring backup", Settings.appname, MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
+            if (result == DialogResult.Cancel)
+                return;
+        }
+
+        private void backupsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            backupform f = new backupform();
+            f.ShowDialog();
         }
     }
 }

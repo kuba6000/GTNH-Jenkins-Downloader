@@ -14,6 +14,7 @@ namespace GTNHJenksinsDownloader
     static class Settings
     {
         static public readonly string appdirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "GTNHJenksinsDownloader\\");
+        static public readonly string backupdirectory = Path.Combine(appdirectory, "backups\\");
         static public readonly string settingspath = Path.Combine(appdirectory, "settings.conf");
         static public readonly string apppath = Path.Combine(appdirectory, "GTNHJenksinsDownloader.exe");
         static public readonly string appname = "GTNH Jenkins Downloader";
@@ -32,6 +33,8 @@ namespace GTNHJenksinsDownloader
             public string servermodpath = "";
             public List<string> blacklist = new List<string>();
             public bool nevershowtrayhide = false;
+            public bool b_deleteold = true;
+            public bool b_deleteafter = true;
         }
         static public Options options = new Options();
         static public void Load()
@@ -55,8 +58,10 @@ namespace GTNHJenksinsDownloader
                     foreach (string item in blacklist)
                         options.blacklist.Add(item);
                 options.nevershowtrayhide = parsed.nevershowtrayhide;
+                options.b_deleteold = parsed.b_deleteold;
+                options.b_deleteafter = parsed.b_deleteafter;
             }
-            catch { }
+            catch { /*Probably older config version*/ }
         }
         static public void Save()
         {
