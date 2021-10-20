@@ -4,12 +4,13 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Threading;
 using Newtonsoft.Json;
 
 namespace GTNHJenksinsDownloader
 {
+    
+
     static class Program
     {
         /// <summary>
@@ -20,7 +21,6 @@ namespace GTNHJenksinsDownloader
         [STAThread]
         static void Main(string[] args)
         {
-
             if (Array.Exists(args, x => x == "updated"))
             {
                 MessageBox.Show("Updated", Settings.appname, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -29,6 +29,7 @@ namespace GTNHJenksinsDownloader
                 if (File.Exists(file)) File.Delete(file);
                 if (Directory.Exists(temppath)) Directory.Delete(temppath);
             }
+            
             if (Array.Exists(args, x => x == "wait"))
                 Thread.Sleep(500);
             if (Array.Exists(args, x => x == "update"))
@@ -39,7 +40,7 @@ namespace GTNHJenksinsDownloader
                 Process.Start(Settings.apppath, "updated");
                 return;
             }
-
+            
 #if !DEBUG
             if (Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Settings.apppath)).Length > 1)
             {
@@ -51,6 +52,7 @@ namespace GTNHJenksinsDownloader
             if (!dirname.EndsWith("\\")) dirname += "\\";
             if (dirname != Settings.appdirectory)
             {
+                
                 if (!Directory.Exists(Settings.appdirectory))
                     Directory.CreateDirectory(Settings.appdirectory);
                 if (!File.Exists(Settings.apppath))
@@ -68,28 +70,6 @@ namespace GTNHJenksinsDownloader
                 }
                 Process.Start(Settings.apppath, "wait");
                 return;
-            }
-            else // Check for updates
-            {
-                string res = Utility.Get("https://api.github.com/repos/kuba6000/GTNH-Jenkins-Downloader/releases");
-                Newtonsoft.Json.Linq.JArray arr = (Newtonsoft.Json.Linq.JArray)JsonConvert.DeserializeObject(res);
-                if (arr.Count > 0)
-                {
-                    if (Utility.GetBuildNumberFromVersionString(((string)arr[0]["name"]).Substring(1)) > Settings.buildNumber)
-                    {
-                        if (Utility.messageBoxYesNo("Do you want to update ?\n" + Settings.version + " -> " + (string)arr[0]["name"], "New update found !", MessageBoxIcon.Information))
-                        {
-                            string temppath = Path.Combine(Path.GetTempPath(), "GTNHJenkinsDownloader\\");
-                            if (!Directory.Exists(temppath)) Directory.CreateDirectory(temppath);
-                            string file = Path.Combine(temppath, "temp.exe");
-                            if (File.Exists(file)) File.Delete(file);
-                            WebClient client = new WebClient();
-                            client.DownloadFile((string)arr[0]["assets"][0]["browser_download_url"], file);
-                            Process.Start(file, "update");
-                            return;
-                        }
-                    }
-                }
             }
 #endif
 
@@ -116,7 +96,32 @@ namespace GTNHJenksinsDownloader
                 info.Close();
             }
 
+            update();
+
             Application.Run(new MainForm());
+        }
+
+        static void update()
+        {
+            string res = Utility.Get("https://api.github.com/repos/kuba6000/GTNH-Jenkins-Downloader/releases");
+            Newtonsoft.Json.Linq.JArray arr = (Newtonsoft.Json.Linq.JArray)JsonConvert.DeserializeObject(res);
+            if (arr.Count > 0)
+            {
+                if (Utility.GetBuildNumberFromVersionString(((string)arr[0]["name"]).Substring(1)) > Settings.buildNumber)
+                {
+                    if (Utility.messageBoxYesNo("Do you want to update ?\n" + Settings.version + " -> " + (string)arr[0]["name"], "New update found !", MessageBoxIcon.Information))
+                    {
+                        string temppath = Path.Combine(Path.GetTempPath(), "GTNHJenkinsDownloader\\");
+                        if (!Directory.Exists(temppath)) Directory.CreateDirectory(temppath);
+                        string file = Path.Combine(temppath, "temp.exe");
+                        if (File.Exists(file)) File.Delete(file);
+                        WebClient client = new WebClient();
+                        client.DownloadFile((string)arr[0]["assets"][0]["browser_download_url"], file);
+                        Process.Start(file, "update");
+                        return;
+                    }
+                }
+            }
         }
     }
 }
