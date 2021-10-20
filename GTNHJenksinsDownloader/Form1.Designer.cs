@@ -277,6 +277,8 @@ namespace GTNHJenksinsDownloader
             // upgrademods
             // 
             this.upgrademods.Enabled = false;
+            this.upgrademods.Font = new System.Drawing.Font("OpenSymbol", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.upgrademods.ForeColor = System.Drawing.Color.Red;
             this.upgrademods.Location = new System.Drawing.Point(526, 27);
             this.upgrademods.Name = "upgrademods";
             this.upgrademods.Size = new System.Drawing.Size(133, 27);
@@ -373,7 +375,7 @@ namespace GTNHJenksinsDownloader
             this.backup.Name = "backup";
             this.backup.Size = new System.Drawing.Size(181, 32);
             this.backup.TabIndex = 13;
-            this.backup.Text = "Restore backup!";
+            this.backup.Text = "Backups !";
             this.backup.UseVisualStyleBackColor = true;
             this.backup.Visible = false;
             this.backup.Click += new System.EventHandler(this.backup_Click);

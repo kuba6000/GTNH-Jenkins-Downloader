@@ -19,6 +19,7 @@ namespace GTNHJenksinsDownloader
         private System.Threading.Timer timer;
 
         bool closing = false;
+        bool afterupgrade = true;
 
         class downloadstatus_t
         {
@@ -423,6 +424,12 @@ namespace GTNHJenksinsDownloader
                 newsize = new Size(685, 655);
             else
                 newsize = new Size(685, 123);
+            if(afterupgrade)
+            {
+                label2.Visible = true;
+                backup.Visible = true;
+                newsize.Height = 692;
+            }
             if(Size != newsize)
             {
                 Point p = new Point((Size.Width - newsize.Width) / 2, (Size.Height - newsize.Height) / 2);
@@ -664,7 +671,9 @@ namespace GTNHJenksinsDownloader
                     }
                     servercreator.End(backupcreator.backuptype.TYPE_SERVER);
 
+                    afterupgrade = true;
                     Invoke((Action)(()=> {
+                        
                         Updatebutton.Enabled = true;
                         upgrademods.Enabled = false;
                         ControlBox = true;
@@ -855,9 +864,7 @@ namespace GTNHJenksinsDownloader
 
         private void backup_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Restoring backup", Settings.appname, MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation);
-            if (result == DialogResult.Cancel)
-                return;
+            backupsToolStripMenuItem_Click(null, null);
         }
 
         private void backupsToolStripMenuItem_Click(object sender, EventArgs e)
