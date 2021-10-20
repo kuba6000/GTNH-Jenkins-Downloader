@@ -96,12 +96,12 @@ namespace GTNHJenksinsDownloader
                 info.Close();
             }
 
-            update();
+            if (update()) return;
 
             Application.Run(new MainForm());
         }
 
-        static void update()
+        static bool update()
         {
             string res = Utility.Get("https://api.github.com/repos/kuba6000/GTNH-Jenkins-Downloader/releases");
             Newtonsoft.Json.Linq.JArray arr = (Newtonsoft.Json.Linq.JArray)JsonConvert.DeserializeObject(res);
@@ -118,10 +118,11 @@ namespace GTNHJenksinsDownloader
                         WebClient client = new WebClient();
                         client.DownloadFile((string)arr[0]["assets"][0]["browser_download_url"], file);
                         Process.Start(file, "update");
-                        return;
+                        return true;
                     }
                 }
             }
+            return false;
         }
     }
 }
