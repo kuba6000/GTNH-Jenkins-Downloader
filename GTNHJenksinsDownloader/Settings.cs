@@ -17,6 +17,7 @@ namespace GTNHJenksinsDownloader
         static public readonly string backupdirectory = Path.Combine(appdirectory, "backups\\");
         static public readonly string settingspath = Path.Combine(appdirectory, "settings.conf");
         static public readonly string apppath = Path.Combine(appdirectory, "GTNHJenksinsDownloader.exe");
+        static public readonly string loggerdirectory = Path.Combine(appdirectory, "logs\\");
         static public readonly string appname = "GTNH Jenkins Downloader";
         static public readonly string version = 'v' + Resources.version;
         static public readonly int buildNumber = Utility.GetBuildNumberFromVersionString(Resources.version);
@@ -35,6 +36,7 @@ namespace GTNHJenksinsDownloader
             public bool nevershowtrayhide = false;
             public bool b_deleteold = true;
             public bool b_deleteafter = true;
+            public bool showconsole = false;
         }
         static public Options options = new Options();
         static public void Load()
@@ -60,12 +62,14 @@ namespace GTNHJenksinsDownloader
                 options.nevershowtrayhide = parsed.nevershowtrayhide;
                 options.b_deleteold = parsed.b_deleteold;
                 options.b_deleteafter = parsed.b_deleteafter;
+                options.showconsole = parsed.showconsole;
             }
             catch { /*Probably older config version*/ }
         }
         static public void Save()
         {
             File.WriteAllText(settingspath, JsonConvert.SerializeObject(options));
+            Console.WriteLine("Saved settings");
         }
     }
     enum AutoUpdateSelector : int

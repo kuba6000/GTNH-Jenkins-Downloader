@@ -15,6 +15,7 @@ namespace GTNHJenksinsDownloader
 {
     public partial class backupform : Form
     {
+        private bool loading = false;
         public backupform()
         {
             InitializeComponent();
@@ -22,9 +23,11 @@ namespace GTNHJenksinsDownloader
 
         private void backupform_Load(object sender, EventArgs e)
         {
+            loading = true;
             deleteold.Checked = Settings.options.b_deleteold;
             deleteafter.Checked = Settings.options.b_deleteafter;
             backup.refreshbackups(this);
+            loading = false;
         }
 
         private void restoreToolStripMenuItem_Click(object sender, EventArgs e)
@@ -63,12 +66,16 @@ namespace GTNHJenksinsDownloader
 
         private void deleteold_CheckedChanged(object sender, EventArgs e)
         {
+            if (loading)
+                return;
             Settings.options.b_deleteold = deleteold.Checked;
             Settings.Save();
         }
 
         private void deleteafter_CheckedChanged(object sender, EventArgs e)
         {
+            if (loading)
+                return;
             Settings.options.b_deleteafter = deleteafter.Checked;
             Settings.Save();
         }
@@ -121,6 +128,7 @@ namespace GTNHJenksinsDownloader
             }
             while (Directory.Exists(temppath));
             Directory.CreateDirectory(temppath);
+            Console.WriteLine("[BACKUP " + ongoingbackup + "] Began at " + temppath);
         }
 
         public void Add(string path)
@@ -133,6 +141,7 @@ namespace GTNHJenksinsDownloader
                 return;
             File.Copy(path, Path.Combine(Path.GetTempPath(), ongoingbackup + '\\' + mods.Count + ".jar"));
             mods.Add(Path.GetFileNameWithoutExtension(path));
+            Console.WriteLine("[BACKUP " + ongoingbackup + "] Added mod: " + Path.GetFileName(path));
         }
 
         public void End(backuptype type)
@@ -147,11 +156,14 @@ namespace GTNHJenksinsDownloader
             }
             File.WriteAllLines(Path.Combine(Path.GetTempPath(), ongoingbackup + "\\mods.txt"), mods);
             File.WriteAllLines(Path.Combine(Path.GetTempPath(), ongoingbackup + "\\data.txt"), new string[]{ ((int)type).ToString() });
-            ZipFile.CreateFromDirectory(Path.Combine(Path.GetTempPath(), ongoingbackup + '\\'), Path.Combine(Settings.backupdirectory, (type == backuptype.TYPE_CLIENT ? "client-" : "server-") + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".zip"));
+            string name = Path.Combine(Settings.backupdirectory, (type == backuptype.TYPE_CLIENT ? "client-" : "server-") + DateTime.Now.ToString("yyyy-MM-dd HH.mm.ss") + ".zip");
+            ZipFile.CreateFromDirectory(Path.Combine(Path.GetTempPath(), ongoingbackup + '\\'), name);
             Directory.Delete(Path.Combine(Path.GetTempPath(), ongoingbackup + '\\'), true);
             mods.Clear();
-            ongoingbackup = "";
 
+            Console.WriteLine("[BACKUP " + ongoingbackup + "] Created: " + name);
+
+            ongoingbackup = "";
             if (Settings.options.b_deleteafter)
             {
                 var a = Directory.EnumerateFiles(Settings.backupdirectory, "*.zip").ToList();

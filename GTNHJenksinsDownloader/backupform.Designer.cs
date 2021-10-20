@@ -146,6 +146,7 @@ namespace GTNHJenksinsDownloader
             this.deleteold.TabIndex = 8;
             this.deleteold.Text = "Delete backups 1 hr old";
             this.deleteold.UseVisualStyleBackColor = true;
+            this.deleteold.Visible = false;
             this.deleteold.CheckedChanged += new System.EventHandler(this.deleteold_CheckedChanged);
             // 
             // deleteafter

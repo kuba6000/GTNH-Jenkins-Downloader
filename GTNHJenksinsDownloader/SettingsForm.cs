@@ -53,6 +53,7 @@ namespace GTNHJenksinsDownloader
             clientchk.Checked = Settings.options.client;
             serverchk.Checked = Settings.options.server;
             servermodpathtxt.Text = Settings.options.servermodpath;
+            consolechk.Checked = Settings.options.showconsole;
             RegistryKey rk = Registry.CurrentUser.OpenSubKey
             ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
             autostartchk.Checked = rk.GetValue(Settings.appname) != null;
@@ -69,6 +70,7 @@ namespace GTNHJenksinsDownloader
             Settings.options.client = clientchk.Checked;
             Settings.options.server = serverchk.Checked;
             Settings.options.servermodpath = servermodpathtxt.Text;
+            Settings.options.showconsole = consolechk.Checked;
             RegistryKey rk = Registry.CurrentUser.OpenSubKey
             ("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 

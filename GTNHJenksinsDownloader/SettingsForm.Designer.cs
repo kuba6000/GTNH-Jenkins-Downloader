@@ -49,6 +49,7 @@ namespace GTNHJenksinsDownloader
             this.servermodpathbutton = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.servermodpathtxt = new System.Windows.Forms.TextBox();
+            this.consolechk = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // savebutton
@@ -237,11 +238,22 @@ namespace GTNHJenksinsDownloader
             this.servermodpathtxt.TabIndex = 13;
             this.servermodpathtxt.TextChanged += new System.EventHandler(this.servermodpathtxt_TextChanged);
             // 
+            // consolechk
+            // 
+            this.consolechk.AutoSize = true;
+            this.consolechk.Location = new System.Drawing.Point(12, 272);
+            this.consolechk.Name = "consolechk";
+            this.consolechk.Size = new System.Drawing.Size(240, 23);
+            this.consolechk.TabIndex = 18;
+            this.consolechk.Text = "Show console (require restart)";
+            this.consolechk.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(559, 282);
+            this.ClientSize = new System.Drawing.Size(559, 309);
+            this.Controls.Add(this.consolechk);
             this.Controls.Add(this.serverchk);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.servermodpathbutton);
@@ -297,5 +309,6 @@ namespace GTNHJenksinsDownloader
         private System.Windows.Forms.Button servermodpathbutton;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox servermodpathtxt;
+        private System.Windows.Forms.CheckBox consolechk;
     }
 }

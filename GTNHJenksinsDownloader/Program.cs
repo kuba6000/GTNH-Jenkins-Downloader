@@ -21,12 +21,6 @@ namespace GTNHJenksinsDownloader
         static void Main(string[] args)
         {
 
-#if DEBUG
-            Utility.CreateConsole();
-#endif
-
-            //Console.WriteLine("test");
-
             if (Array.Exists(args, x => x == "updated"))
             {
                 MessageBox.Show("Updated", Settings.appname, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -122,7 +116,6 @@ namespace GTNHJenksinsDownloader
                 info.Close();
             }
 
-            
             Application.Run(new MainForm());
         }
     }

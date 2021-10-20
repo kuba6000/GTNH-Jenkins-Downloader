@@ -142,6 +142,7 @@ namespace GTNHJenksinsDownloader
             double progressperoperation = 50d / (double)pathtomodfile.Length;
             modfile[] modfiles = new modfile[pathtomodfile.Length];
             int i = 0;
+            Console.WriteLine("Building local mod list");
             foreach (string pathtomod in pathtomodfile)
             {
                 updateStatusLabel(true, "Building mods list: " + Path.GetFileName(pathtomod), Color.Black, (int)progress);
@@ -151,7 +152,9 @@ namespace GTNHJenksinsDownloader
                 modfile.filename = Path.GetFileName(pathtomod);
                 modfiles[i++] = modfile;
                 progress += progressperoperation;
+                Console.WriteLine(modfile.filename + " - " + modfile.hash);
             }
+            Console.WriteLine("Local mod list done");
             return modfiles;
         }
 
@@ -166,11 +169,13 @@ namespace GTNHJenksinsDownloader
                 maxprogress = 75;
             if (Settings.options.client)
             {
+                Console.WriteLine("Updating client mod list");
                 string[] clientmods = Directory.GetFiles(Settings.options.modpath);
                 clientupdates = UpdateModsList(clientmodslistview, getModList(clientmods), a, ref clientmodlist, 50, maxprogress);
             }
             if (Settings.options.server)
             {
+                Console.WriteLine("Updating server mod list");
                 string[] servermods = Directory.GetFiles(Settings.options.servermodpath);
                 serverupdates = UpdateModsList(servermodslistview, getModList(servermods), a, ref servermodlist, (maxprogress == 75 ? 75 : 50), 100);
             }
@@ -217,6 +222,7 @@ namespace GTNHJenksinsDownloader
             Newtonsoft.Json.Linq.JArray jobs = parsed.jobs;
             double progress = (double)actualprogress;
             double progressperoperation = ((double)maxprogress - progress) / jobs.Count;
+            Console.WriteLine("Searching mods in jenkins list");
             for (int i = 0; i < jobs.Count; i++)
             {
                 updateStatusLabel(true, "Updating list", Color.Black, (int)progress);
@@ -228,6 +234,7 @@ namespace GTNHJenksinsDownloader
                     foreach (modfile l in mymods)
                         if (Path.GetExtension(l.path).ToLower() == ".jar" && Utility.checkifsamemod((string)jobs[i]["lastSuccessfulBuild"]["artifacts"][0]["fileName"], l.filename))
                         {
+                            Console.WriteLine("Found " + l.filename + " on jenkins");
                             mymod = l;
                             found = true;
                             break;
@@ -245,7 +252,12 @@ namespace GTNHJenksinsDownloader
                             }
                         }
                         if (!newversion)
+                        {
+                            Console.WriteLine("Newest version installed, skipping");
                             continue;
+                        }
+
+                        Console.WriteLine("Newer version found");
 
                         long lastbuildtime = (long)jobs[i]["lastSuccessfulBuild"]["timestamp"];
                         DateTime time1 = Utility.UnixTimeStampToDateTime(lastbuildtime / 1000);
@@ -264,15 +276,18 @@ namespace GTNHJenksinsDownloader
                         Newtonsoft.Json.Linq.JArray fingerprint = (Newtonsoft.Json.Linq.JArray)jobs[i]["lastSuccessfulBuild"]["fingerprint"];
                         if (artifacts.Count > 1)
                         {
+                            Console.WriteLine("Detected more than one artifact. Searching for the right one");
                             artifact = -1;
                             for (int j = 0; j < artifacts.Count; j++)
                                 if (Utility.trimnumbers((string)artifacts[j]["fileName"]).ToLower().Length == Utility.trimnumbers(mymod.filename).ToLower().Length)
                                 {
+                                    Console.WriteLine("Found artifact: " + (string)artifacts[j]["fileName"]);
                                     artifact = j;
                                     break;
                                 }
                             if(artifact == -1)
                             {
+                                Console.WriteLine("Can't find artifact through name, searching for hash instead");
                                 //MessageBox.Show(mymod.filename);
                                 //search for file
                                 Newtonsoft.Json.Linq.JArray builds = ((dynamic)JsonConvert.DeserializeObject(Utility.Get((string)jobs[i]["url"] + "api/json?tree=builds[fingerprint[hash]]"))).builds;
@@ -282,6 +297,7 @@ namespace GTNHJenksinsDownloader
                                     for (int j = 0; j < fg.Count; j++)
                                         if((string)fg[j]["hash"] == mymod.hash)
                                         {
+                                            Console.WriteLine("Found artifact: " + artifacts[j]["fileName"]);
                                             artifact = j;
                                             break;
                                         }
@@ -290,7 +306,10 @@ namespace GTNHJenksinsDownloader
                                 }
                             }
                             if (artifact == -1)
+                            {
+                                Console.WriteLine("Can't find artifact ! Skipping mod");
                                 continue; // cant find right mod
+                            }
                         }
                         if (!Settings.options.blacklist.Contains(item.Text))
                         {
@@ -320,6 +339,7 @@ namespace GTNHJenksinsDownloader
                         }
                         else
                         {
+                            Console.WriteLine("Mod is blacklisted");
                             item.BackColor = Color.Gray;
                             item.ForeColor = Color.DarkRed;
                         }
@@ -364,12 +384,15 @@ namespace GTNHJenksinsDownloader
             //GTNewHorizonsCoreMod-1.7.10-1.8.03.jar == GTNewHorizonsCoreMod-1.7.10-1.8.00.jar
             //MessageBox.Show(trimnumbers("GTNewHorizonsCoreMod-1.7.10-1.8.03.jar") + " == " + trimnumbers("GTNewHorizonsCoreMod-1.7.10-1.8.00.jar"));
 
+            Settings.Load();
+
+            Logger.Init();
+
             versionlabel.Text = Settings.version;
 
             if (!Directory.Exists(Settings.backupdirectory))
                 Directory.CreateDirectory(Settings.backupdirectory);
 
-            Settings.Load();
             UpdateSettings();
         }
 
@@ -443,7 +466,7 @@ namespace GTNHJenksinsDownloader
             else if (Settings.options.autoupdateinterval == AutoUpdateSelector.everyhour)
             {
                 SetUpTimer(LastUpdate.AddHours(1).TimeOfDay);
-                updateStatusLabel(false, "Next auto list checking " + LastUpdate.AddHours(10).ToString(), Color.Black);
+                updateStatusLabel(false, "Next auto list checking " + LastUpdate.AddHours(1).ToString(), Color.Black);
             }
         }
 
@@ -497,6 +520,7 @@ namespace GTNHJenksinsDownloader
 
                     if (Settings.options.client && clientmodlist.Count > 0)
                     {
+                        Console.WriteLine("Upgrading client mods");
                         clientcreator.Begin();
                         int counter = 0;
                         foreach (modsList_t mod in clientmodlist)
@@ -505,24 +529,30 @@ namespace GTNHJenksinsDownloader
                             updateTotalStatusLabel(true, percent.ToString() + "%", Color.Black, percent);
                             counter++;
                             bool faileddownloading = false;
+                            Console.WriteLine("Upgrading " + mod.name);
                             while (true)
                             {
                                 downloadstatus.filename = mod.name;
                                 downloadstatus.status = 0;
                                 DownloadMOD(mod.downloadurl, modfile);
+                                Console.WriteLine("Downloading " + mod.downloadurl + " as " + modfile);
                                 while (downloadstatus.status == 0)
                                     Thread.Sleep(200);
                                 if (downloadstatus.status == -1)
                                 {
+                                    Console.WriteLine("Download failed ! Skipping");
                                     faileddownloading = true;
                                     failed.Add(mod);
                                     break;
                                 }
                                 if (Utility.calculateMD5(modfile) == mod.hash)
                                     break;
+                                Console.WriteLine("Downloaded file hash doesn't match ! Repeating");
                             }
                             if (faileddownloading)
                                 continue;
+
+                            Console.WriteLine("Download success");
 
                             clientcreator.Add(mod.localfilename);
 
@@ -531,18 +561,24 @@ namespace GTNHJenksinsDownloader
                             DateTime time = Utility.UnixTimeStampToDateTime(mod.lastbuildtime / 1000);
                             File.SetCreationTime(mod.filename, time);
                             File.SetLastWriteTime(mod.filename, time);
-                            if(Settings.options.server && servermodlist.Count > 0)
+
+                            Console.WriteLine("Replaced mod: " + Path.GetFileName(mod.localfilename) + " -> " + Path.GetFileName(mod.filename));
+
+                            if (Settings.options.server && servermodlist.Count > 0)
                             {
+                                Console.WriteLine("Checking if the same mod appears in server list");
                                 int index = servermodlist.FindIndex((modsList_t arg) => { return arg.name == mod.name; });
                                 if (index != -1)
                                 {
+                                    Console.WriteLine("Found");
                                     servercreator.Add(servermodlist[index].localfilename);
 
                                     File.Delete(servermodlist[index].localfilename);
                                     File.Copy(modfile, servermodlist[index].filename);
-                                    File.SetCreationTime(mod.filename, time);
-                                    File.SetLastWriteTime(mod.filename, time);
+                                    File.SetCreationTime(servermodlist[index].filename, time);
+                                    File.SetLastWriteTime(servermodlist[index].filename, time);
                                     servermodlist.RemoveAt(index);
+                                    Console.WriteLine("Replaced server mod: " + Path.GetFileName(servermodlist[index].localfilename) + " -> " + Path.GetFileName(mod.filename));
                                 }
                             }
                             if (File.Exists(modfile)) File.Delete(modfile);
@@ -573,24 +609,30 @@ namespace GTNHJenksinsDownloader
                             int percent = (int)(((double)counter / (double)servermodlist.Count) * 100d);
                             updateTotalStatusLabel(true, percent.ToString() + "%", Color.Black, percent);
                             bool faileddownloading = false;
+                            Console.WriteLine("Upgrading " + mod.name);
                             while (true)
                             {
                                 downloadstatus.filename = mod.name;
                                 downloadstatus.status = 0;
                                 DownloadMOD(mod.downloadurl, modfile);
+                                Console.WriteLine("Downloading " + mod.downloadurl + " as " + modfile);
                                 while (downloadstatus.status == 0)
                                     Thread.Sleep(200);
                                 if (downloadstatus.status == -1)
                                 {
+                                    Console.WriteLine("Download failed ! Skipping");
                                     faileddownloading = true;
                                     failed.Add(mod);
                                     break;
                                 }
                                 if (Utility.calculateMD5(modfile) == mod.hash)
                                     break;
+                                Console.WriteLine("Downloaded file hash doesn't match ! Repeating");
                             }
                             if (faileddownloading)
                                 continue;
+
+                            Console.WriteLine("Download success");
 
                             servercreator.Add(mod.localfilename);
 
@@ -600,6 +642,8 @@ namespace GTNHJenksinsDownloader
                             File.SetCreationTime(mod.filename, time);
                             File.SetLastWriteTime(mod.filename, time);
                             if (File.Exists(modfile)) File.Delete(modfile);
+
+                            Console.WriteLine("Replaced mod: " + Path.GetFileName(mod.localfilename) + " -> " + Path.GetFileName(mod.filename));
                         }
                         
                         if (failed.Count > 0)
@@ -642,6 +686,7 @@ namespace GTNHJenksinsDownloader
             }
         }
 
+        
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
 #if DEBUG

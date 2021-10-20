@@ -83,7 +83,7 @@ namespace GTNHJenksinsDownloader
             this.statuslabel,
             this.toolstripbreak,
             this.versionlabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 620);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 631);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1323, 22);
             this.statusStrip1.SizingGrip = false;
@@ -359,7 +359,7 @@ namespace GTNHJenksinsDownloader
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("OpenSymbol", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(8, 586);
+            this.label2.Location = new System.Drawing.Point(8, 593);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(442, 24);
             this.label2.TabIndex = 12;
@@ -369,7 +369,7 @@ namespace GTNHJenksinsDownloader
             // backup
             // 
             this.backup.Font = new System.Drawing.Font("OpenSymbol", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.backup.Location = new System.Drawing.Point(469, 582);
+            this.backup.Location = new System.Drawing.Point(469, 589);
             this.backup.Name = "backup";
             this.backup.Size = new System.Drawing.Size(181, 32);
             this.backup.TabIndex = 13;
@@ -382,7 +382,7 @@ namespace GTNHJenksinsDownloader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1323, 642);
+            this.ClientSize = new System.Drawing.Size(1323, 653);
             this.Controls.Add(this.backup);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
