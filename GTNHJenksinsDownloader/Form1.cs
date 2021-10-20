@@ -19,7 +19,7 @@ namespace GTNHJenksinsDownloader
         private System.Threading.Timer timer;
 
         bool closing = false;
-        bool afterupgrade = true;
+        bool afterupgrade = false;
 
         class downloadstatus_t
         {
