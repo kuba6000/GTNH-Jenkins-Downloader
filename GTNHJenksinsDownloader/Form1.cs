@@ -297,20 +297,27 @@ namespace GTNHJenksinsDownloader
                                 builddatai = j;
                                 break;
                             }
-
-                        for (int x = 0; x < gits.Count; x++)
-                            for(int y = 0; y < gits[x].Count; y++)
+                        {
+                            bool outerbreak = false;
+                            for (int x = 0; x < gits.Count; x++)
                             {
-                                //Console.WriteLine((string)gits[j]["clone_url"]);
-                                //Console.WriteLine((string)jobs[i]["lastSuccessfulBuild"]["actions"][2]["remoteUrls"][0]);
-                                
-                                if((string)gits[x][y]["clone_url"] == (string)jobs[i]["lastSuccessfulBuild"]["actions"][builddatai]["remoteUrls"][0])
+                                for (int y = 0; y < gits[x].Count; y++)
                                 {
-                                    defaultbranch = (string)gits[x][y]["default_branch"];
-                                    Console.WriteLine("Default branch in git found: " + defaultbranch);
-                                    break;
+                                    //Console.WriteLine((string)gits[j]["clone_url"]);
+                                    //Console.WriteLine((string)jobs[i]["lastSuccessfulBuild"]["actions"][2]["remoteUrls"][0]);
+
+                                    if ((string)gits[x][y]["clone_url"] == (string)jobs[i]["lastSuccessfulBuild"]["actions"][builddatai]["remoteUrls"][0])
+                                    {
+                                        defaultbranch = (string)gits[x][y]["default_branch"];
+                                        Console.WriteLine("Default branch in git found: " + defaultbranch);
+                                        outerbreak = true;
+                                        break;
+                                    }
                                 }
+                                if (outerbreak)
+                                    break;
                             }
+                        }
                         if(defaultbranch == "")
                         {
                             Console.WriteLine("Cannot find default branch in git, skipping");
