@@ -1,4 +1,4 @@
-name: .NET
+name: Build
 
 on:
   push:
@@ -16,4 +16,4 @@ jobs:
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1.1
     - name: Build
-      run: msbuild GTNHJenksinsDownloader.sln
+      run: msbuild GTNHJenksinsDownloader.sln /property:Configuration=Release
