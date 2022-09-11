@@ -1,0 +1,20 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: setup-msbuild
+        uses: microsoft/setup-msbuild@v1.1
+      - name: Build
+        run: msbuild GTNHJenksinsDownloader.sln /property:Configuration=Release
+      - name: Release under current tag
+        run: gh release create "${{ github.ref }}" (get-item .\GTNHJenksinsDownloader\bin\Release\*.exe)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
