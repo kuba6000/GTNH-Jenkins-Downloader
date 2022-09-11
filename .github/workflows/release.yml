@@ -15,6 +15,6 @@ jobs:
       - name: Build
         run: msbuild GTNHJenksinsDownloader.sln /property:Configuration=Release
       - name: Release under current tag
-        run: gh release create "${RELEASE_VERSION}" ./GTNHJenksinsDownloader/bin/Release/*.exe
+        run: gh release create "${{ github.ref }}" ./GTNHJenksinsDownloader/bin/Release/*.exe
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
