@@ -115,9 +115,9 @@ namespace GTNHJenksinsDownloader
             Newtonsoft.Json.Linq.JArray arr = (Newtonsoft.Json.Linq.JArray)JsonConvert.DeserializeObject(res);
             if (arr.Count > 0)
             {
-                if (Utility.GetBuildNumberFromVersionString(((string)arr[0]["name"]).Substring(1)) > Settings.buildNumber)
+                if (Utility.GetBuildNumberFromVersionString(((string)arr[0]["tag_name"]).Substring(1)) > Settings.buildNumber)
                 {
-                    if (Utility.messageBoxYesNo("Do you want to update ?\n" + Settings.version + " -> " + (string)arr[0]["name"], "New update found !", MessageBoxIcon.Information))
+                    if (Utility.messageBoxYesNo("Do you want to update ?\n" + Settings.version + " -> " + (string)arr[0]["tag_name"], "New update found !", MessageBoxIcon.Information))
                     {
                         string temppath = Path.Combine(Path.GetTempPath(), "GTNHJenkinsDownloader\\");
                         if (!Directory.Exists(temppath)) Directory.CreateDirectory(temppath);
